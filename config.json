@@ -1,13 +1,17 @@
 {
     "device": "cuda",
-    "learning_rate": 0.01,
     "batch_size": 16,
     "epochs": 30,
     "tokenizer_path": "vinai/phobert-base",
-    "model_weights_path": "models/PhoBertClassifierV2 weights",
-    "train_data_path": "data/preprocessed_data/train_data.csv",
-    "val_data_path": "data/preprocessed_data/val_data.csv",
-    "stopwords_path": "data/external/vietnamese-stopwords-dash.txt",
-    "vncorenlp_path": "libs/vncorenlp/VnCoreNLP-1.2.jar",
-    "optimizer_lr": 2e-5
+    "optimizer_lr": 2e-5,
+    "paths": {
+        "model_weights": "models/PhoBertClassifierV1 weights",
+        "train_data": "data/preprocessed_data/train_data.csv",
+        "val_data": "data/preprocessed_data/val_data.csv",
+        "stopwords": "data/external/vietnamese-stopwords-dash.txt",
+        "vncorenlp": "libs/vncorenlp/VnCoreNLP-1.2.jar",
+        "model_save_path_template": "models/PhoBertClassifierV2_epoch_{}.pth",
+        "training_model": "PhoBertClassifierV1",
+        "evaluation_model": "PhoBertClassifierV2"
+    }
 }
