@@ -11,7 +11,7 @@
         "stopwords": "data/external/vietnamese-stopwords-dash.txt",
         "vncorenlp": "libs/vncorenlp/VnCoreNLP-1.2.jar",
         "model_save_path_template": "models/PhoBertClassifierV2_epoch_{}.pth",
-        "training_model": "PhoBertClassifierV1",
-        "evaluation_model": "PhoBertClassifierV2"
+        "training_model": "CustomPhoBERTModel()",
+        "evaluation_model": "CustomPhoBERTModel()"
     }
 }

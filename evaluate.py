@@ -19,7 +19,7 @@ class ModelTester:
         self.tokenizer = AutoTokenizer.from_pretrained(self.config["tokenizer_path"])
 
         # Load model
-        self.model = CustomPhoBERTModel()
+        self.model = self.config['paths']['evaluation_model']
         self.model.load_state_dict(torch.load(self.config['paths']['model_weights'], map_location=self.device))
         self.model.to(self.device)
         self.model.eval()
