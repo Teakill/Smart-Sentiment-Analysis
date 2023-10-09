@@ -1,3 +1,4 @@
+
 import numpy as np
 import torch.nn.functional as F
 import pandas as pd
@@ -8,6 +9,7 @@ from models.PhoBertClassifierV1 import CustomPhoBERTModel
 from utils.scoring import get_score_modified
 import json
 
+
 class ModelTester:
     def __init__(self, config_path):
         # Load configurations
@@ -15,21 +17,26 @@ class ModelTester:
             self.config = json.load(file)
 
         self.device = torch.device(self.config["device"] if torch.cuda.is_available() else 'cpu')
-        self.preprocessor = Preprocessing(self.config['paths']['stopwords'], self.config['paths']['vncorenlp'])
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config["tokenizer_path"])
+        self.preprocessor = Preprocessing(self.config['data']['stopwords'], self.config['data']['vncorenlp'])
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config["models"]["tokenizer_path"])
 
         # Load model
-        self.model = self.config['paths']['evaluation_model']
-        self.model.load_state_dict(torch.load(self.config['paths']['model_weights'], map_location=self.device))
+        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
+            self.model = CustomPhoBERTModel()
+            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
+        else:
+            raise ValueError("The specified model in the config is not recognized.")
+
         self.model.to(self.device)
         self.model.eval()
 
         # Load test data
-        self.test_df = pd.read_csv(self.config['paths']['test_data'])
+        self.test_df = pd.read_csv(self.config['data']['private_test'])
 
     def predict(self, text):
         text = self.preprocessor.process(text)
-        input_ids = self.tokenizer.encode(text, return_tensors="pt", padding='max_length', max_length=256, truncation=True)
+        input_ids = self.tokenizer.encode(text, return_tensors="pt", padding='max_length', max_length=256,
+                                          truncation=True)
         attention_mask = (input_ids != self.tokenizer.pad_token_id).int()
         input_ids = input_ids.to(self.device)
         attention_mask = attention_mask.to(self.device)
@@ -59,13 +66,12 @@ class ModelTester:
                 print(f"{metric}: {value:.4f}")
 
         mean_scores = {}
-        for metric in ['precision', 'recall', 'f1_score', 'r2_score', 'competition_score']:
+        for metric in ['precision', 'recall', 'f1_score', 'r2_score', 'final_score']:
             mean_scores[metric] = np.mean([metrics[metric] for _, metrics in aspect_scores.items()])
 
         print("\nMean Scores Across Aspects:")
         for metric, value in mean_scores.items():
             print(f"{metric}: {value:.4f}")
-
 
 
 if __name__ == '__main__':

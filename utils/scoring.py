@@ -115,32 +115,8 @@ def report_score(labels: np.array, predictions: np.array) -> dict:
     score = {}
     score["precision"], score["recall"], score["f1_score"] = get_precision_recall_f1_score(labels, predictions)
     score["r2_score"] = get_r2_score(labels, predictions)
-    score["competition_score"] = score["f1_score"] * score["r2_score"]
-    return score
+    score["final_score"] = score["f1_score"] * score["r2_score"]
 
-
-def get_score(y_true: np.array, y_pred: np.array) -> dict:
-    """Get score
-
-    Args:
-        y_true (np.array): shape: [n_examples, 30]
-        y_pred (np.array): shape: [n_examples, 30], logits, before sigmoid
-
-    Returns:
-        dict: a score dictionary of each aspect
-    """
-    score = {}
-    preds = []
-    labels = []
-    for i in range(len(y_true)):
-        preds.append(get_prediction(y_pred[i]))
-        labels.append(get_label(y_true[i]))
-
-    preds = np.array(preds)
-    labels = np.array(labels)
-    aspects = ["giai_tri", "luu_tru", "nha_hang", "an_uong", "di_chuyen", "mua_sam"]
-    for i in range(6):
-        score[aspects[i]] = report_score(labels[:, i], preds[:, i])
     return score
 
 

@@ -10,33 +10,56 @@ from models.PhoBertClassifierV1 import CustomPhoBERTModel
 from functools import partial
 from utils.preprocessors import Preprocessing
 import json
+import os
 
 # Load the configurations
 with open("config.json", "r") as file:
     config = json.load(file)
 
-class ModelTrainer:
 
+
+class ModelTrainer:
     def __init__(self, config):
         self.config = config
-
         self.device = torch.device(config["device"] if torch.cuda.is_available() else 'cpu')
-        self.tokenizer = AutoTokenizer.from_pretrained(config["tokenizer_path"])
+        self.tokenizer = AutoTokenizer.from_pretrained(config["models"]["tokenizer_path"])
 
-        preprocessor = Preprocessing('data/external/vietnamese-stopwords-dash.txt', 'libs/vncorenlp/VnCoreNLP-1.2.jar')
-        self.train_dataset = ReviewScoreDataset(config["paths"]["train_data"], self.tokenizer, preprocessor)
-        self.val_dataset = ReviewScoreDataset(config["paths"]["val_data"], self.tokenizer, preprocessor)
+        preprocessor = Preprocessing(config['data']['stopwords'], config['data']['vncorenlp'])
+
+        self.train_dataset = ReviewScoreDataset(config["data"]["train"], self.tokenizer, preprocessor)
+        self.val_dataset = ReviewScoreDataset(config["data"]["val"], self.tokenizer, preprocessor)
 
         train_collate_fn = partial(self.train_dataset.collate_fn)
         val_collate_fn = partial(self.val_dataset.collate_fn)
 
-        self.train_dataloader = DataLoader(self.train_dataset, batch_size=config["batch_size"], shuffle=True, collate_fn=train_collate_fn)
-        self.val_dataloader = DataLoader(self.val_dataset, batch_size=config["batch_size"], shuffle=False, collate_fn=val_collate_fn)
-        self.model = CustomPhoBERTModel().to(self.device)
-        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=config["optimizer_lr"])
+        self.train_dataloader = DataLoader(self.train_dataset, batch_size=config["training"]["batch_size"], shuffle=True,
+                                           collate_fn=train_collate_fn)
+        self.val_dataloader = DataLoader(self.val_dataset, batch_size=config["training"]["batch_size"], shuffle=False,
+                                         collate_fn=val_collate_fn)
+
+        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
+            self.model = CustomPhoBERTModel()
+            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
+        else:
+            raise ValueError("The specified model in the config is not recognized.")
+
+        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=config["training"]["optimizer_lr"])
         self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=3, verbose=True)
         self.criterion = nn.CrossEntropyLoss()
 
+        # Load checkpoint if it exists
+        self.checkpoint_path = config['models']['checkpoint_path']
+        if os.path.isfile(self.checkpoint_path):
+            checkpoint = torch.load(self.checkpoint_path)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            self.start_epoch = checkpoint['epoch'] + 1
+            self.best_val_loss = checkpoint['best_val_loss']
+            print(
+                f"Loaded checkpoint from epoch {self.start_epoch} with best validation loss: {self.best_val_loss:.4f}")
+        else:
+            self.start_epoch = 0
+            self.best_val_loss = float('inf')
     def train_epoch(self):
         self.model.train()
         epoch_loss = 0.0
@@ -64,7 +87,7 @@ class ModelTrainer:
 
             # Optionally print loss every n batches
             if i % 10 == 0:
-                print(f'Batch: {i}, Loss: {total_loss.item()}')
+                print(f'Epoch: {self.start_epoch + 1}, Batch: {i}, Loss: {total_loss.item()}')
 
         return epoch_loss / len(self.train_dataloader)
 
@@ -99,6 +122,8 @@ class ModelTrainer:
         return avg_val_loss, aspect_scores
 
     def train(self, num_epochs):
+        best_dev_score = float('-inf')  # Initialize best_dev_score
+
         for epoch in range(num_epochs):
             # Training phase
             train_loss = self.train_epoch()
@@ -115,7 +140,7 @@ class ModelTrainer:
 
             # Calculate the mean score across all aspects
             mean_scores = {}
-            for metric in ['precision', 'recall', 'f1_score', 'r2_score', 'competition_score']:
+            for metric in ['precision', 'recall', 'f1_score', 'r2_score', 'final_score']:
                 mean_scores[metric] = np.mean([metrics[metric] for _, metrics in aspect_scores.items()])
 
             # Print mean scores
@@ -126,10 +151,15 @@ class ModelTrainer:
             # Update the learning rate based on validation loss
             self.scheduler.step(val_loss)
 
-            # Save the model's state_dict (consider saving every few epochs or based on some criteria like best validation performance)
-            model_save_path = self.config['paths']['model_save_path_template'].format(epoch + 1)
-            torch.save(self.model.state_dict(), model_save_path)
-            print(f'Model saved to {model_save_path}\n')
+            # Save the model's state_dict if dev_score improved
+            if mean_scores['final_score'] > best_dev_score:
+                best_dev_score = mean_scores['final_score']
+                model_save_path = self.config['models']['weights_path']
+                torch.save(self.model.state_dict(), model_save_path)
+                print(f'New best dev score: {best_dev_score:.4f}. Model saved to {model_save_path}\n')
+            else:
+                print(f'Dev score did not improve. Current best is {best_dev_score:.4f}\n')
+            self.start_epoch += 1
 
     def save_model(self, path):
         torch.save(self.model.state_dict(), path)
@@ -140,4 +170,4 @@ class ModelTrainer:
 
 if __name__ == '__main__':
     trainer = ModelTrainer(config)
-    trainer.train(num_epochs=30)
+    trainer.train(config['training']['num_epochs'])

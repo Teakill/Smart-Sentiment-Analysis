@@ -1,24 +1,32 @@
 import torch
-from models import  PhoBertClassifierV1
+from models.PhoBertClassifierV1 import CustomPhoBERTModel
 from transformers import AutoTokenizer
+import json
+
+# Load configurations
+with open("config.json", "r") as file:
+    config = json.load(file)
 
 # Initialize model and load trained weights
-model = PhoBertClassifierV1()
-model.load_state_dict(torch.load('/kaggle/working/PhoBertTuneV4.pth'))
+model_path = config["models"]["weights_path"]
+model = CustomPhoBERTModel()
+model.load_state_dict(torch.load(model_path))
 model.eval()
 
 # Move model to device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device(config["device"] if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 # Initialize tokenizer
-tokenizer = AutoTokenizer.from_pretrained("vinai/phobert-base")
+tokenizer_path = config["models"]["tokenizer_path"]
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
 
 # Feature names for each classifier
 feature_names = ['giai_tri', 'luu_tru', 'nha_hang', 'an_uong', 'di_chuyen', 'mua_sam']
 
 # Test on custom text
-custom_text = "Được đặt trên một chiếc tàu nổi giữa đầm mang tới không gian thơ mộng, tận hưởng trọn vẹn những làn gió biển mát lành và nhân viên mặc đồng phục quần tây - áo trắng vô cùng lịch sự, nhà hàng Hoa Hoa (còn có tên gọi khác là Tàu Hoa Hoa) là một trong những quán hải sản ngon ở Quy Nhơn mà bạn nhất định phải thử. Dĩ nhiên không chỉ được biết đến vì thiết kế độc đáo mà đồ ăn tại đây cũng vô cùng ngon và đa dạng, nhất là các món về cá mú và sứa."  # Replace with your text
+custom_text = "Được đặt trên một chiếc tàu nổi giữa đầm mang tới không gian thơ mộng..."  # (truncated for brevity)
+
 encoded = tokenizer(custom_text, return_tensors='pt', padding='max_length', max_length=256, truncation=True)
 input_ids = encoded['input_ids'].to(device)
 attention_mask = encoded['attention_mask'].to(device)

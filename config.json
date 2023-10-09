@@ -1,17 +1,24 @@
 {
     "device": "cuda",
-    "batch_size": 16,
-    "epochs": 30,
-    "tokenizer_path": "vinai/phobert-base",
-    "optimizer_lr": 2e-5,
-    "paths": {
-        "model_weights": "models/PhoBertClassifierV1 weights",
-        "train_data": "data/preprocessed_data/train_data.csv",
-        "val_data": "data/preprocessed_data/val_data.csv",
+    "training": {
+        "batch_size": 16,
+        "num_epochs": 1,
+        "print_interval": 10,
+        "optimizer_lr": 2e-5
+    },
+    "models": {
+        "tokenizer_path": "vinai/phobert-base",
+        "training_model": "CustomPhoBERTModel",
+        "evaluation_model": "CustomPhoBERTModel",
+        "weights_path": "models/PhoBertClassifierV1_weights.pth",
+        "save_path_template": "models/PhoBertClassifierV1.pth",
+        "checkpoint_path": "models/PhoBertClassifierCheckpoint/checkpoint.pth"
+    },
+    "data": {
+        "train": "data/preprocessed_data/train_data.csv",
+        "val": "data/preprocessed_data/val_data.csv",
+        "private_test": "data/external/chall_02_private_test.csv",
         "stopwords": "data/external/vietnamese-stopwords-dash.txt",
-        "vncorenlp": "libs/vncorenlp/VnCoreNLP-1.2.jar",
-        "model_save_path_template": "models/PhoBertClassifierV2_epoch_{}.pth",
-        "training_model": "CustomPhoBERTModel()",
-        "evaluation_model": "CustomPhoBERTModel()"
+        "vncorenlp": "libs/vncorenlp/VnCoreNLP-1.2.jar"
     }
 }

@@ -13,10 +13,10 @@ def main(args):
         trainer.train(args.epochs)
     elif args.mode == 'eval':
         tester = ModelTester(config_path="config.json",
-                             model_weights_path=config['paths']['model_weights'],
-                             test_data_path=config['paths']['train_data'],  # assuming you want to use train_data here
-                             stopwords_path=config['paths']['stopwords'],
-                             vncore_path=config['paths']['vncorenlp'])
+                             model_weights_path=config['models']['weights_path'],
+                             test_data_path=config['data']['train'],  # assuming you want to use train_data here
+                             stopwords_path=config['data']['stopwords'],
+                             vncore_path=config['data']['vncorenlp'])
         tester.evaluate()
 
 if __name__ == '__main__':
