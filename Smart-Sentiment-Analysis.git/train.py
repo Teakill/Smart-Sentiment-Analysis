@@ -50,7 +50,7 @@ class ModelTrainer:
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=config["training"]["optimizer_lr"])
         self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=3, verbose=True)
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.BCELoss()
 
         # Load checkpoint if it exists
         self.checkpoint_path = config['models']['checkpoint_path']
