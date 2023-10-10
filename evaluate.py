@@ -23,14 +23,15 @@ class ModelTester:
         # Load model
         if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
             self.model = CustomPhoBERTModel()
-            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
 
-        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
+        elif self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
             self.model = CustomPhoBERTModel_Mean_Max_Pooling()
-            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
 
+        # Load weights if the file exists
+        if os.path.exists(self.config['models']['weights_path']):
+            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
         else:
-            raise ValueError("The specified model in the config is not recognized.")
+            print(f"Weights file at {self.config['models']['weights_path']} does not exist!")
 
         self.model.to(self.device)
         self.model.eval()
