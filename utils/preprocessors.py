@@ -73,7 +73,7 @@ class Preprocessing():
         text = self.remove_special_char(text)
         text = self.replace_abbreviations(text)
         text = self.segment(text)
-        text = self.stop_word_remove(text)
+        # text = self.stop_word_remove(text)
         return text
 
 if __name__ == '__main__':
