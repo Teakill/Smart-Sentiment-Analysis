@@ -3,4 +3,4 @@ torch
 transformers
 vncorenlp
 git+https://github.com/trent-b/iterative-stratification.git
-sklearn
+scikit-learn
