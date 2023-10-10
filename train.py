@@ -36,21 +36,23 @@ class ModelTrainer:
                                            collate_fn=train_collate_fn)
         self.val_dataloader = DataLoader(self.val_dataset, batch_size=config["training"]["batch_size"], shuffle=False,
                                          collate_fn=val_collate_fn)
-
+####
         if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
             self.model = CustomPhoBERTModel()
-            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
 
-        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
+        elif self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
             self.model = CustomPhoBERTModel_Mean_Max_Pooling()
-            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
 
+        # Load weights if the file exists
+        if os.path.exists(self.config['models']['weights_path']):
+            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
         else:
-            raise ValueError("The specified model in the config is not recognized.")
+            print(f"Weights file at {self.config['models']['weights_path']} does not exist!")
+#####
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=config["training"]["optimizer_lr"])
         self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=3, verbose=True)
-        self.criterion = nn.BCELoss()
+        self.criterion = nn.BCEWithLogitsLoss()
 
         # Load checkpoint if it exists
         self.checkpoint_path = config['models']['checkpoint_path']
