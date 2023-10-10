@@ -6,7 +6,7 @@ from datasets.review_dataset import ReviewScoreDataset
 import numpy as np
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils import scoring
-from models.PhoBertClassifierV1 import CustomPhoBERTModel
+from models.PhoBertClassifierV1 import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
 from functools import partial
 from utils.preprocessors import Preprocessing
 import json
@@ -40,6 +40,11 @@ class ModelTrainer:
         if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
             self.model = CustomPhoBERTModel()
             self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
+
+        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
+            self.model = CustomPhoBERTModel_Mean_Max_Pooling()
+            self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))
+
         else:
             raise ValueError("The specified model in the config is not recognized.")
 
