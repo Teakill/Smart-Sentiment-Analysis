@@ -49,7 +49,7 @@ class ModelTrainer:
         else:
             print(f"Weights file at {self.config['models']['weights_path']} does not exist!")
 #####
-
+        self.model = self.model.to(self.device) # Set model to device
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=config["training"]["optimizer_lr"])
         self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=3, verbose=True)
         self.criterion = nn.CrossEntropyLoss()
