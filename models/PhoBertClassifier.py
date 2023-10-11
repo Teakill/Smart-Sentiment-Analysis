@@ -92,3 +92,47 @@ class CustomPhoBERTModel_Mean_Max_Pooling(nn.Module):
         logits = [classifier(x) for classifier in self.classifiers]
 
         return logits
+
+class CustomPhoBERTModel_LSTMPooling(nn.Module):
+    def __int__(self):
+        super(CustomPhoBERTModel_LSTMPooling, self).__init__()
+
+        self.phobert = AutoModel.from_pretrained("vinai/phobert-base")
+
+        self.phobert.config.output_hidden_states = True
+
+        for i in range(4):
+            for param in self.phobert.encoder.layer[i].parameters():
+                param.requires_grad = False
+
+        self.hidden_size = self.phobert.config.hidden_size * 4
+
+        self.lstm = nn.LSTM(self.hidden_size, 512, batch_first= True, bidirectional= True)
+
+        self.fc = nn.Linear(1024, 512) # 1024 due to bidirectional LSTM
+
+        self.relu = nn.ReLU()
+
+        self.dropout = nn.Dropout(0.3)
+
+        self.classifiers = nn.ModuleList([nn.Linear(512,6) for _ in range(6)])
+
+    def forward(self, input_ids, attention_mask):
+
+        outputs = self.phobert(input_ids, attention_mask = attention_mask)
+
+        hidden_states = outputs.hidden_states
+
+        concat_hidden = torch.cat(tuple(hidden_states[-4 : ]), dim = -1)
+
+        lstm_out, _ = self.lstm(concat_hidden)
+
+        x = lstm_out[:, -1, :]
+
+        x = self.dropout(x)
+
+        x = self.relu(self.bn(self.fc(x)))
+
+        logits = [classifier(x) for classifier in self.classifiers]
+
+        return logits

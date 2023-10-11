@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 from transformers import AutoTokenizer
 from utils.preprocessors import Preprocessing
-from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
+from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling, CustomPhoBERTModel_LSTMPooling
 from utils.scoring import get_score_modified
 import json
 
@@ -27,6 +27,8 @@ class ModelTester:
         elif self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
             self.model = CustomPhoBERTModel_Mean_Max_Pooling()
 
+        elif self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_LSTMPooling":
+            self.model = CustomPhoBERTModel_LSTMPooling()
         # Load weights if the file exists
         if os.path.exists(self.config['models']['weights_path']):
             self.model.load_state_dict(torch.load(self.config['models']['weights_path'], map_location=self.device))

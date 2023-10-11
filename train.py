@@ -6,7 +6,7 @@ from datasets.review_dataset import ReviewScoreDataset
 import numpy as np
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils import scoring
-from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
+from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling, CustomPhoBERTModel_LSTMPooling
 from functools import partial
 from utils.preprocessors import Preprocessing
 import json
@@ -37,11 +37,13 @@ class ModelTrainer:
         self.val_dataloader = DataLoader(self.val_dataset, batch_size=config["training"]["batch_size"], shuffle=False,
                                          collate_fn=val_collate_fn)
 ####
-        if self.config["models"]["evaluation_model"] == "CustomPhoBERTModel":
+        # Load model
+        if self.config["models"]["training_model"] == "CustomPhoBERTModel":
             self.model = CustomPhoBERTModel()
-
-        elif self.config["models"]["evaluation_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
+        elif self.config["models"]["training_model"] == "CustomPhoBERTModel_Mean_Max_Pooling":
             self.model = CustomPhoBERTModel_Mean_Max_Pooling()
+        elif self.config["models"]["training_model"] == "CustomPhoBERTModel_LSTMPooling":
+            self.model = CustomPhoBERTModel_LSTMPooling()
 
         # Load weights if the file exists
         if os.path.exists(self.config['models']['weights_path']):
