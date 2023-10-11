@@ -17,6 +17,7 @@
     "data": {
         "train": "data/preprocessed_data/train_data.csv",
         "val": "data/preprocessed_data/val_data.csv",
+        "test": "data/preprocessed_data/test_data.csv",
         "private_test": "data/external/chall_02_private_test.csv",
         "stopwords": "data/external/vietnamese-stopwords-dash.txt",
         "vncorenlp": "libs/vncorenlp/VnCoreNLP-1.2.jar"

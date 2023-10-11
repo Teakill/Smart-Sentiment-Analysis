@@ -37,7 +37,7 @@ class ModelTester:
         self.model.eval()
 
         # Load test data
-        self.test_df = pd.read_csv(self.config['data']['private_test'])
+        self.test_df = pd.read_csv(self.config['data']['test'])
 
     def predict(self, text):
         text = self.preprocessor.process(text)
