@@ -11,7 +11,7 @@ from functools import partial
 from utils.preprocessors import Preprocessing
 import json
 import os
-
+import gc
 # Load the configurations
 with open("config.json", "r") as file:
     config = json.load(file)
@@ -180,3 +180,15 @@ class ModelTrainer:
 if __name__ == '__main__':
     trainer = ModelTrainer(config)
     trainer.train(config['training']['num_epochs'])
+
+    # Delete individual attributes first
+    del trainer.train_dataset
+    del trainer.val_dataset
+    del trainer.model
+    del trainer.optimizer
+
+    # Then delete the main object
+    del trainer
+
+    # Force garbage collection
+    gc.collect()
