@@ -8,11 +8,11 @@
     },
     "models": {
         "tokenizer_path": "vinai/phobert-base",
-        "training_model": "CustomPhoBERTModel",
-        "evaluation_model": "CustomPhoBERTModel",
-        "weights_path": "models/PhoBertClassifierV1_weights.pth",
-        "save_path_template": "models/PhoBertClassifierV1.pth",
-        "checkpoint_path": "models/PhoBertClassifierCheckpoint/checkpoint.pth"
+        "training_model": "CustomPhoBERTModel_LSTMPooling",
+        "evaluation_model": "CustomPhoBERTModel_LSTMPooling",
+        "weights_path": "models/PhoBertClassifierV3_weights.pth",
+        "save_path_template": "models/PhoBertClassifierV3.pth",
+        "checkpoint_path": "models/PhoBertClassifierCheckpoint/checkpoint_V3.pth"
     },
     "data": {
         "train": "data/preprocessed_data/train_data.csv",
