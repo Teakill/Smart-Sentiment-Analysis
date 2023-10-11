@@ -1,5 +1,5 @@
 import torch
-from models.PhoBertClassifierV1 import CustomPhoBERTModel
+from models.PhoBertClassifier import CustomPhoBERTModel
 from transformers import AutoTokenizer
 import json
 

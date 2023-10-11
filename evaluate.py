@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 from transformers import AutoTokenizer
 from utils.preprocessors import Preprocessing
-from models.PhoBertClassifierV1 import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
+from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
 from utils.scoring import get_score_modified
 import json
 

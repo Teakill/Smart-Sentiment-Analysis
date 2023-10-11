@@ -6,7 +6,7 @@ from datasets.review_dataset import ReviewScoreDataset
 import numpy as np
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils import scoring
-from models.PhoBertClassifierV1 import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
+from models.PhoBertClassifier import CustomPhoBERTModel, CustomPhoBERTModel_Mean_Max_Pooling
 from functools import partial
 from utils.preprocessors import Preprocessing
 import json
