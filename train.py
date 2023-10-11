@@ -182,13 +182,13 @@ if __name__ == '__main__':
     trainer.train(config['training']['num_epochs'])
 
     # Delete individual attributes first
-    del trainer.train_dataset
-    del trainer.val_dataset
-    del trainer.model
-    del trainer.optimizer
-
-    # Then delete the main object
-    del trainer
-
-    # Force garbage collection
-    gc.collect()
+    # del trainer.train_dataset
+    # del trainer.val_dataset
+    # del trainer.model
+    # del trainer.optimizer
+    #
+    # # Then delete the main object
+    # del trainer
+    #
+    # # Force garbage collection
+    # gc.collect()
