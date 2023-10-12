@@ -22,3 +22,5 @@ Preprocessing
 -Remove special char
 -Remove stopword (without doing this, the model actually performs better)
 -Segmentation
+
+How to train: https://colab.research.google.com/drive/1Hvm9CRNRchITdAJcYqKK3ozxl-nge-sD?usp=sharing
