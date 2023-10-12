@@ -1,4 +1,8 @@
 # Smart-Sentiment-Analysis
+Smart-Sentiment-Analysis is an innovative approach towards sentiment analysis, originally inspired by the data from Hackathon 2022.
+
+
+![Uploading image.png…]()
 
 🧠 Model Architecture
 The model is structured around 6 unique classifiers. Each classifier is dedicated to a specific feature, making for a total of 36 neurons. This architecture allows for fine-grained sentiment analysis and captures nuances that traditional models might miss.
