@@ -12,3 +12,13 @@ Our model achieved a commendable score of 0.73! To put that into perspective, th
 
 ⚡ Fun Fact
 Did you know? The human brain consists of approximately 86 billion neurons! Our model might have 36, but we're catching up! 😉
+
+Technology
+-Torch Framework
+-VnCoreNlp
+-KFoldStratified
+
+Preprocessing
+-Remove special char
+-Remove stopword (without doing this, the model actually performs better)
+-Segmentation
