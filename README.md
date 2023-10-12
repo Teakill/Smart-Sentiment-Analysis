@@ -1,8 +1,8 @@
 # Smart-Sentiment-Analysis
 Smart-Sentiment-Analysis is an innovative approach towards sentiment analysis, originally inspired by the data from Hackathon 2022.
 
-https://vinuni.edu.vn/wp-content/uploads/2022/12/34790f8754378d69d426.jpg
-
+[https://vinuni.edu.vn/wp-content/uploads/2022/12/34790f8754378d69d426.jpg
+](https://www.google.com/url?sa=i&url=https%3A%2F%2Fvinuni.edu.vn%2Fevent%2Fvinuni-hackathon-2022%2F&psig=AOvVaw2ttYQucqBOYt6wnUvjMCrz&ust=1697188984110000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCOj5-eSX8IEDFQAAAAAdAAAAABAE)
 
 🧠 Model Architecture
 The model is structured around 6 unique classifiers. Each classifier is dedicated to a specific feature, making for a total of 36 neurons. This architecture allows for fine-grained sentiment analysis and captures nuances that traditional models might miss.
